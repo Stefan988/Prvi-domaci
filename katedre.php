@@ -1,7 +1,28 @@
 <?php
     include "broker.php";
     $broker=Broker::getBroker();
-     if(isset($_POST["akcija"])){
+    if(isset($_GET["akcija"])){
+        $res=array();
+        if($_GET["akcija"]=="naziv"){
+            $broker->vratiKatedreProsto();
+            
+        }else{
+            if($_GET["akcija"]=="vrati detaljno"){
+                $broker->vratiKatedreDetaljno();
+            }
+        }
+        if(!$broker->getRezultat()){
+            $res["status"]=$broker->getMysqli()->error;
+        }else{
+            $res["status"]="ok";
+            $res["katedre"]=array();
+            while($katedra=$broker->getRezultat()->fetch_object()){
+                $res["katedre"][]=$katedra;
+            }
+        }
+    echo json_encode($res);
+    }
+    if(isset($_POST["akcija"])){
         if($_POST["akcija"]=="obrisi"){
             $broker->obrisiKatedru($_POST["id"]);
             if(!$broker->getRezultat()){
